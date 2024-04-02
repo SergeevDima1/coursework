@@ -108,24 +108,6 @@ int main()
             parent[i][i] = i;
         }
         vector<vector<int>> tmp = my_pow(Matrix, n - 1);
-        cout << endl;
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                cout << tmp[i][j] << " ";
-            }
-            cout << endl;
-        }
-        cout << endl;
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                cout << parent[i][j] << " ";
-            }
-            cout << endl;
-        }
         int v = t;
         vector<int> path; // shortest (s, t)-path
 
