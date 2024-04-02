@@ -7,9 +7,9 @@
 
 using namespace std;
 
-int INF = 1e9; // infinity symbol
-int n, s, t; // number of vertices in the graph, numbers of start and end vertices
-vector<int> parent(1000000, -1); // ancestor array to recover the shortest path
+int INF = 1e9;                                           // infinity symbol
+int n, s, t;                                             // number of vertices in the graph, numbers of start and end vertices
+vector<vector<int>> parent(1000, vector<int>(1000, -1)); // ancestor array to recover the shortest path
 
 vector<vector<int>> operator*(vector<vector<int>> A, vector<vector<int>> B) // matrix multiplication
 {
@@ -27,9 +27,9 @@ vector<vector<int>> operator*(vector<vector<int>> A, vector<vector<int>> B) // m
                     if (A[i][k] + B[k][j] < res[i][j])
                     {
                         res[i][j] = A[i][k] + B[k][j];
-                        if (i == s)
+                        if (A[i][j] >= res[i][j] && k != j && k != i)
                         {
-                            parent[j] = k;
+                            parent[i][j] = k;
                         }
                     }
                 }
@@ -58,9 +58,8 @@ int main()
     int k; // number of locked edges
     cin >> k;
 
-    parent[s] = s;
     vector<vector<int>> Matrix(n, vector<int>(n)); // adjacency matrix
-    set<pair<int, int>> blocked; // multiple locked edges
+    set<pair<int, int>> blocked;                   // multiple locked edges
 
     for (int i = 0; i < n; i++)
     {
@@ -88,21 +87,52 @@ int main()
             blocked.insert({a, b});
             blocked.insert({b, a});
         }
-
     }
 
     int result = 0;
-
     while (true)
     {
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (Matrix[i][j] != 0 && Matrix[i][j] != INF)
+                {
+                    parent[i][j] = i;
+                    parent[j][i] = j;
+                }
+            }
+        }
+        for (int i = 0; i < n; i++)
+        {
+            parent[i][i] = i;
+        }
         vector<vector<int>> tmp = my_pow(Matrix, n - 1);
+        cout << endl;
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                cout << tmp[i][j] << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                cout << parent[i][j] << " ";
+            }
+            cout << endl;
+        }
         int v = t;
         vector<int> path; // shortest (s, t)-path
 
-        while (v != parent[v])
+        while (v != parent[s][v])
         {
             path.push_back(v);
-            v = parent[v];
+            v = parent[s][v];
         }
 
         path.push_back(v);
@@ -120,7 +150,7 @@ int main()
                 cnt = i;
             }
         }
-        
+
         if (flag == 0)
         {
             cout << (double)(result + tmp[s][t]) / tmp[s][t];
